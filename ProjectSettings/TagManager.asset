@@ -6,6 +6,7 @@ TagManager:
   tags:
   - horsParcours
   - trou
+  - balle
   layers:
   - Default
   - TransparentFX

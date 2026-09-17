@@ -9,11 +9,14 @@ public class Balle : MonoBehaviour
 
 
     // [Header("État de jeu")]
-
+Vector3 positionBalle;
 Rigidbody rigidbodyDeBalle;
 
     // [Header("Paramètres de tir")]
 [SerializeField] float tirIntensite;
+[SerializeField] InputAction angleAction;
+
+[SerializeField] float angleVitesse;
 
 [SerializeField] float accumulateurForce = 0.1f;
 
@@ -30,15 +33,21 @@ Rigidbody rigidbodyDeBalle;
 
 
     // [Header("Composant")]
-
+LineRenderer LineRendererdelaballe;
 
     void Start()
     {
 rigidbodyDeBalle = GetComponent<Rigidbody>();
+LineRendererdelaballe = GetComponent<LineRenderer>();
     }
 
     void Update()
     {
+        angleVitesse += angleAction.ReadValue<float>();
+        Vector3 direction = Quaternion.Euler(0, angleVitesse, 0) * Vector3.forward;
+        LineRendererdelaballe.SetPosition(0, transform.position);
+        LineRendererdelaballe.SetPosition(1, transform.position + direction);
+        
 if(tirAction.WasPressedThisFrame()){
             tirIntensite = 0;
             jaugeForce.value = tirIntensite;
@@ -54,23 +63,40 @@ if(tirAction.IsPressed()){
 
     };
 if (tirAction.WasReleasedThisFrame()){
-rigidbodyDeBalle.AddForce(Vector3.forward * tirIntensite * Time.deltaTime, ForceMode.Impulse);
+rigidbodyDeBalle.AddForce(direction * tirIntensite * Time.deltaTime, ForceMode.Impulse);
                 tirIntensite = 0;
                 jaugeForce.value = tirIntensite;
-
-
+positionBalle = transform.position;
         };
 
 }
 
     void OnCollisionEnter(Collision collision)
     {
+if (collision.gameObject.tag == "horsParcours")
+        {
+            //sert a arreter objet arrete tt force sur objet
 
+            rigidbodyDeBalle.linearVelocity = Vector3.zero;
+            rigidbodyDeBalle.angularVelocity = Vector3.zero;
+
+            transform.position = positionBalle;
+
+        }
     }
 
     void OnTriggerEnter(Collider collision)
     {
-
+if (collision.gameObject.tag == "trou")
+        {
+            //sert a arreter objet arrete tt force sur objet
+            
+            rigidbodyDeBalle.linearVelocity = Vector3.zero;
+            rigidbodyDeBalle.angularVelocity = Vector3.zero;
+            transform.position = collision.transform.position;
+            rigidbodyDeBalle.useGravity = false;
+            Debug.Log("Fin");
+        }
     }
 
     // ===================
@@ -98,10 +124,13 @@ rigidbodyDeBalle.AddForce(Vector3.forward * tirIntensite * Time.deltaTime, Force
     void OnEnable()
     {
 tirAction.Enable();
+angleAction.Enable();
     }
 
     void OnDisable()
     {
 tirAction.Disable();
+angleAction.Disable();
+
     }
 }
