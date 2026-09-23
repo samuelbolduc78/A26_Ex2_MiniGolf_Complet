@@ -4,22 +4,24 @@ using UnityEngine.UI;
 using TMPro;
 using System.Collections;
 using UnityEngine.SceneManagement;
+using UnityEditor;
 public class Balle : MonoBehaviour
 {
 
 
     // [Header("État de jeu")]
-Vector3 positionBalle;
-Rigidbody rigidbodyDeBalle;
-
+    Vector3 positionBalle;
+    Rigidbody rigidbodyDeBalle;
+    AudioSource audioSourceDelaBalle;
     // [Header("Paramètres de tir")]
-[SerializeField] float tirIntensite;
-[SerializeField] InputAction angleAction;
+    [SerializeField] float tirIntensite;
+    [SerializeField] int nbCoup;
+    [SerializeField] InputAction angleAction;
 
-[SerializeField] float angleVitesse;
+    [SerializeField] float angleVitesse;
 
-[SerializeField] float accumulateurForce = 0.1f;
-
+    [SerializeField] float accumulateurForce = 0.1f;
+    [SerializeField] TMP_Text txtcoup;
 
     // [Header("Gauge de force")]
 
@@ -34,11 +36,17 @@ Rigidbody rigidbodyDeBalle;
 
     // [Header("Composant")]
 LineRenderer LineRendererdelaballe;
+    [SerializeField] AudioClip sonErreur;
+    [SerializeField] AudioClip sonFin;
+
 
     void Start()
     {
 rigidbodyDeBalle = GetComponent<Rigidbody>();
 LineRendererdelaballe = GetComponent<LineRenderer>();
+        nbCoup = 0;
+        MettreAJourUI();
+        audioSourceDelaBalle.GetComponent<AudioSource>();
     }
 
     void Update()
@@ -67,7 +75,13 @@ rigidbodyDeBalle.AddForce(direction * tirIntensite * Time.deltaTime, ForceMode.I
                 tirIntensite = 0;
                 jaugeForce.value = tirIntensite;
 positionBalle = transform.position;
-        };
+            nbCoup++;
+
+            MettreAJourUI();
+
+
+        }
+        ;
 
 }
 
@@ -79,7 +93,7 @@ if (collision.gameObject.tag == "horsParcours")
 
             rigidbodyDeBalle.linearVelocity = Vector3.zero;
             rigidbodyDeBalle.angularVelocity = Vector3.zero;
-
+            audioSourceDelaBalle.PlayOneShot(sonErreur);
             transform.position = positionBalle;
 
         }
@@ -96,6 +110,8 @@ if (collision.gameObject.tag == "trou")
             transform.position = collision.transform.position;
             rigidbodyDeBalle.useGravity = false;
             Debug.Log("Fin");
+            audioSourceDelaBalle.PlayOneShot(sonFin);
+
         }
     }
 
@@ -107,6 +123,7 @@ if (collision.gameObject.tag == "trou")
 
     void MettreAJourUI()
     {
+        txtcoup.text = $"{nbCoup} coup(s)";
     }
 
     // IEnumerator FinJeu()
