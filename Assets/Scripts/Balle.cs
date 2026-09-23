@@ -44,9 +44,9 @@ LineRenderer LineRendererdelaballe;
     {
 rigidbodyDeBalle = GetComponent<Rigidbody>();
 LineRendererdelaballe = GetComponent<LineRenderer>();
-        nbCoup = 0;
-        MettreAJourUI();
-        audioSourceDelaBalle.GetComponent<AudioSource>();
+ nbCoup = 0;
+MettreAJourUI();
+audioSourceDelaBalle = GetComponent<AudioSource>();
     }
 
     void Update()
