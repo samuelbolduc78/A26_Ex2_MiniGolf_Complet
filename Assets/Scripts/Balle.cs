@@ -1,10 +1,12 @@
+using System.Collections;
+using TMPro;
+using Unity.Cinemachine;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.UI;
-using TMPro;
-using System.Collections;
 using UnityEngine.SceneManagement;
-using UnityEditor;
+using UnityEngine.UI;
+using static GestJeux;
 public class Balle : MonoBehaviour
 {
 
@@ -22,10 +24,14 @@ public class Balle : MonoBehaviour
 
     [SerializeField] float accumulateurForce = 0.1f;
     [SerializeField] TMP_Text txtcoup;
+    [SerializeField] TMP_Text txtFin;
+    [SerializeField] private CinemachineCamera FreeLookCamera;
+    [SerializeField] private CinemachineCamera CameraFin;
+
 
     // [Header("Gauge de force")]
 
-[SerializeField] Slider jaugeForce;
+    [SerializeField] Slider jaugeForce;
 
     // [Header("Input Actions")]
     //definier une ou plusieur touche comme adeventlistener
@@ -38,50 +44,65 @@ public class Balle : MonoBehaviour
 LineRenderer LineRendererdelaballe;
     [SerializeField] AudioClip sonErreur;
     [SerializeField] AudioClip sonFin;
+    [SerializeField] AudioClip chansonFin;
 
-
+    public bool peuxJouer;
     void Start()
     {
 rigidbodyDeBalle = GetComponent<Rigidbody>();
 LineRendererdelaballe = GetComponent<LineRenderer>();
  nbCoup = 0;
 MettreAJourUI();
-audioSourceDelaBalle = GetComponent<AudioSource>();
+        txtFin.enabled = false;
+        CameraFin.enabled = false;
+
+        audioSourceDelaBalle = GetComponent<AudioSource>();
+        peuxJouer = true;
     }
 
     void Update()
     {
-        angleVitesse += angleAction.ReadValue<float>();
-        Vector3 direction = Quaternion.Euler(0, angleVitesse, 0) * Vector3.forward;
-        LineRendererdelaballe.SetPosition(0, transform.position);
-        LineRendererdelaballe.SetPosition(1, transform.position + direction);
-        
-if(tirAction.WasPressedThisFrame()){
-            tirIntensite = 0;
-            jaugeForce.value = tirIntensite;
-        };
 
-    
+       if (peuxJouer == true && GestJeux.instance.etat == etatJeu.jeu)
+        {
+            angleVitesse += angleAction.ReadValue<float>();
+            Vector3 direction = Quaternion.Euler(0, angleVitesse, 0) * Vector3.forward;
+            LineRendererdelaballe.SetPosition(0, transform.position);
+            LineRendererdelaballe.SetPosition(1, transform.position + direction);
 
-if(tirAction.IsPressed()){
-            tirIntensite += accumulateurForce;
-            tirIntensite = Mathf.Clamp(tirIntensite, jaugeForce.minValue, jaugeForce.maxValue);
-            jaugeForce.value = tirIntensite;
-
-
-    };
-if (tirAction.WasReleasedThisFrame()){
-rigidbodyDeBalle.AddForce(direction * tirIntensite * Time.deltaTime, ForceMode.Impulse);
+            if (tirAction.WasPressedThisFrame())
+            {
                 tirIntensite = 0;
                 jaugeForce.value = tirIntensite;
-positionBalle = transform.position;
-            nbCoup++;
+                //...
+            }
+            ;
 
-            MettreAJourUI();
 
 
-        }
+            if (tirAction.IsPressed())
+            {
+                tirIntensite += accumulateurForce;
+                tirIntensite = Mathf.Clamp(tirIntensite, jaugeForce.minValue, jaugeForce.maxValue);
+                jaugeForce.value = tirIntensite;
+
+
+            }
+            ;
+            if (tirAction.WasReleasedThisFrame())
+            {
+                rigidbodyDeBalle.AddForce(direction * tirIntensite * Time.deltaTime, ForceMode.Impulse);
+                tirIntensite = 0;
+                jaugeForce.value = tirIntensite;
+                positionBalle = transform.position;
+                nbCoup++;
+
+                MettreAJourUI();
+
+                StartCoroutine(atttendreFinCoup());
+            }
         ;
+        }
 
 }
 
@@ -102,20 +123,63 @@ if (collision.gameObject.tag == "horsParcours")
     void OnTriggerEnter(Collider collision)
     {
 if (collision.gameObject.tag == "trou")
-        {
+        {            
+            LineRendererdelaballe.enabled = false;
+            StartCoroutine(FinJeux());
             //sert a arreter objet arrete tt force sur objet
-            
             rigidbodyDeBalle.linearVelocity = Vector3.zero;
             rigidbodyDeBalle.angularVelocity = Vector3.zero;
             transform.position = collision.transform.position;
             rigidbodyDeBalle.useGravity = false;
-            Debug.Log("Fin");
             audioSourceDelaBalle.PlayOneShot(sonFin);
+            LineRendererdelaballe.enabled = false;
 
+            StopCoroutine(atttendreFinCoup());
+            Debug.Log("Fin");
+            GestJeux.instance.terminerJeu();
         }
     }
 
     // ===================
+    IEnumerator atttendreFinCoup()
+    {
+        peuxJouer = false;
+        LineRendererdelaballe.enabled = false;
+        yield return new WaitForFixedUpdate(); //attend de calc physique ensuite calc vitesse est ce que vitesse descendu6 ?
+        float vitesse = rigidbodyDeBalle.linearVelocity.magnitude; //dit longueur de vitesse et distance parcouru par seconde transforme en vitesse avec magnitude
+        while (vitesse>0.1f)
+        {
+            vitesse = rigidbodyDeBalle.linearVelocity.magnitude; //recalc physique vitesse
+            yield return null; //attend au prochain frame
+        } //utiliser coroutine exo2
+        yield return new WaitForSeconds(2);
+       
+        Debug.Log("Debut");
+        Debug.Log("Fin");
+        peuxJouer = true;
+        LineRendererdelaballe.enabled = true;
+
+    }
+    IEnumerator FinJeux()
+    {
+        CameraFin.enabled = false;
+
+        FreeLookCamera.enabled = true;
+        StopCoroutine(atttendreFinCoup());
+
+
+        txtFin.enabled = false;
+        yield return new WaitForSeconds(3);
+        txtFin.enabled = true;
+        StopCoroutine(atttendreFinCoup());
+
+        audioSourceDelaBalle.PlayOneShot(chansonFin);
+        txtFin.text = "Bravo!";
+        LineRendererdelaballe.enabled = false;
+        FreeLookCamera.enabled = false;
+        CameraFin.enabled = true;
+
+    }
     void FrapperBalle()
     {
 
