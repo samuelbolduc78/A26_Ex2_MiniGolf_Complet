@@ -58,6 +58,16 @@ MettreAJourUI();
 
         audioSourceDelaBalle = GetComponent<AudioSource>();
         peuxJouer = true;
+        if (PlayerPrefs.HasKey("dernierPosition"))
+        {
+            string positionJson = JsonUtility.ToJson(transform.position);
+
+            PlayerPrefs.SetString("dernierPosition", positionJson);
+
+            transform.position = JsonUtility.FromJson<Vector3>(positionJson);
+
+
+        }
     }
 
     void Update()
@@ -98,7 +108,8 @@ MettreAJourUI();
                 nbCoup++;
 
                 MettreAJourUI();
-
+                string positionJson = JsonUtility.ToJson(transform.position);
+                PlayerPrefs.SetString("dernierPosition", positionJson);
                 StartCoroutine(atttendreFinCoup());
             }
         ;
@@ -116,6 +127,8 @@ if (collision.gameObject.tag == "horsParcours")
             rigidbodyDeBalle.angularVelocity = Vector3.zero;
             audioSourceDelaBalle.PlayOneShot(sonErreur);
             transform.position = positionBalle;
+            PlayerPrefs.SetInt("score", nbCoup);
+            SceneManager.LoadScene("Intro");
 
         }
     }
@@ -124,7 +137,6 @@ if (collision.gameObject.tag == "horsParcours")
     {
 if (collision.gameObject.tag == "trou")
         {            
-            LineRendererdelaballe.enabled = false;
             StartCoroutine(FinJeux());
             //sert a arreter objet arrete tt force sur objet
             rigidbodyDeBalle.linearVelocity = Vector3.zero;
@@ -132,9 +144,10 @@ if (collision.gameObject.tag == "trou")
             transform.position = collision.transform.position;
             rigidbodyDeBalle.useGravity = false;
             audioSourceDelaBalle.PlayOneShot(sonFin);
-            LineRendererdelaballe.enabled = false;
 
             StopCoroutine(atttendreFinCoup());
+            PlayerPrefs.DeleteKey("dernierPosition");
+
             Debug.Log("Fin");
             GestJeux.instance.terminerJeu();
         }
@@ -165,19 +178,20 @@ if (collision.gameObject.tag == "trou")
         CameraFin.enabled = false;
 
         FreeLookCamera.enabled = true;
-        StopCoroutine(atttendreFinCoup());
 
 
         txtFin.enabled = false;
         yield return new WaitForSeconds(3);
         txtFin.enabled = true;
-        StopCoroutine(atttendreFinCoup());
 
         audioSourceDelaBalle.PlayOneShot(chansonFin);
         txtFin.text = "Bravo!";
         LineRendererdelaballe.enabled = false;
         FreeLookCamera.enabled = false;
         CameraFin.enabled = true;
+        yield return new WaitForSeconds(1);
+
+        SceneManager.LoadScene("Intro");
 
     }
     void FrapperBalle()
