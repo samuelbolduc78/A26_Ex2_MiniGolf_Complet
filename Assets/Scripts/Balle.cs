@@ -128,7 +128,6 @@ if (collision.gameObject.tag == "horsParcours")
             audioSourceDelaBalle.PlayOneShot(sonErreur);
             transform.position = positionBalle;
             PlayerPrefs.SetInt("score", nbCoup);
-            SceneManager.LoadScene("Intro");
 
         }
     }
@@ -136,18 +135,21 @@ if (collision.gameObject.tag == "horsParcours")
     void OnTriggerEnter(Collider collision)
     {
 if (collision.gameObject.tag == "trou")
-        {            
-            StartCoroutine(FinJeux());
-            //sert a arreter objet arrete tt force sur objet
+        { 
             rigidbodyDeBalle.linearVelocity = Vector3.zero;
             rigidbodyDeBalle.angularVelocity = Vector3.zero;
+            StopAllCoroutines();
+            StartCoroutine(IntroDelai());
+
+            StartCoroutine(FinJeux());
+            //sert a arreter objet arrete tt force sur objet
+           
             transform.position = collision.transform.position;
             rigidbodyDeBalle.useGravity = false;
             audioSourceDelaBalle.PlayOneShot(sonFin);
-
-            StopCoroutine(atttendreFinCoup());
+            LineRendererdelaballe.enabled = false;
             PlayerPrefs.DeleteKey("dernierPosition");
-
+            
             Debug.Log("Fin");
             GestJeux.instance.terminerJeu();
         }
@@ -189,7 +191,10 @@ if (collision.gameObject.tag == "trou")
         LineRendererdelaballe.enabled = false;
         FreeLookCamera.enabled = false;
         CameraFin.enabled = true;
-        yield return new WaitForSeconds(1);
+    }
+    IEnumerator IntroDelai()
+    {
+        yield return new WaitForSeconds(9);
 
         SceneManager.LoadScene("Intro");
 
