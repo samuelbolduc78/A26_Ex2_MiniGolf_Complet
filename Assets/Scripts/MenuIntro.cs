@@ -8,6 +8,7 @@ public class MenuIntro : MonoBehaviour
     [SerializeField] TMP_Text txtScores;
     void Start()
     {
+
         //si la cle esxiste on enregistre sinon on met ine valeur par default
         if (PlayerPrefs.HasKey("score"))
         {
