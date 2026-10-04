@@ -102,7 +102,7 @@ MettreAJourUI();
             if (tirAction.WasReleasedThisFrame())
             {
                 rigidbodyDeBalle.AddForce(direction * tirIntensite * Time.deltaTime, ForceMode.Impulse);
-                tirIntensite = 0;
+                tirIntensite = 10;
                 jaugeForce.value = tirIntensite;
                 positionBalle = transform.position;
                 nbCoup++;
