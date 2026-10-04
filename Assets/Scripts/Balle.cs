@@ -16,13 +16,13 @@ public class Balle : MonoBehaviour
     Rigidbody rigidbodyDeBalle;
     AudioSource audioSourceDelaBalle;
     // [Header("Paramètres de tir")]
-    [SerializeField] float tirIntensite;
+    [SerializeField] float tirIntensite = 7;
     [SerializeField] int nbCoup;
     [SerializeField] InputAction angleAction;
 
     [SerializeField] float angleVitesse;
 
-    [SerializeField] float accumulateurForce = 0.1f;
+    [SerializeField] float accumulateurForce = 3f;
     [SerializeField] TMP_Text txtcoup;
     [SerializeField] TMP_Text txtFin;
     [SerializeField] private CinemachineCamera FreeLookCamera;
