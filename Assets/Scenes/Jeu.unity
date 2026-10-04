@@ -3889,7 +3889,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9dd260477b4fd3447b207f9c15b85f5e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Balle
-  tirIntensite: 7
+  tirIntensite: 10
   nbCoup: 0
   angleAction:
     m_Name: Angle
