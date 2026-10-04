@@ -112,3 +112,8 @@ InitTestScene*.unity*
 
 # Auto-generated cache in Assets folder
 /[Aa]ssets/[Ss]ceneDependencyCache*
+# Allow docs build for GitHub Pages
+!docs/
+!docs/**
+!docs/Build/
+!docs/Build/**
