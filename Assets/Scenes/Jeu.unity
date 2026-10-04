@@ -3950,7 +3950,7 @@ MonoBehaviour:
     m_Flags: 0
     m_Priority: 0
   angleVitesse: 0
-  accumulateurForce: 5
+  accumulateurForce: 10
   txtcoup: {fileID: 1257783338}
   txtFin: {fileID: 389469807}
   FreeLookCamera: {fileID: 1519887400}
