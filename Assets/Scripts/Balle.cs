@@ -16,13 +16,13 @@ public class Balle : MonoBehaviour
     Rigidbody rigidbodyDeBalle;
     AudioSource audioSourceDelaBalle;
     // [Header("Paramètres de tir")]
-    [SerializeField] float tirIntensite = 7;
+    [SerializeField] float tirIntensite = 10f;
     [SerializeField] int nbCoup;
     [SerializeField] InputAction angleAction;
 
     [SerializeField] float angleVitesse;
 
-    [SerializeField] float accumulateurForce = 3f;
+    [SerializeField] float accumulateurForce = 5f;
     [SerializeField] TMP_Text txtcoup;
     [SerializeField] TMP_Text txtFin;
     [SerializeField] private CinemachineCamera FreeLookCamera;
@@ -138,9 +138,6 @@ if (collision.gameObject.tag == "trou")
         { 
             rigidbodyDeBalle.linearVelocity = Vector3.zero;
             rigidbodyDeBalle.angularVelocity = Vector3.zero;
-            StopAllCoroutines();
-            StartCoroutine(IntroDelai());
-
             StartCoroutine(FinJeux());
             //sert a arreter objet arrete tt force sur objet
            
