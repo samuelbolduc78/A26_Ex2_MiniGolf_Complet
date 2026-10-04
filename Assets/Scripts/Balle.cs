@@ -140,7 +140,7 @@ if (collision.gameObject.tag == "trou")
             rigidbodyDeBalle.angularVelocity = Vector3.zero;
             StartCoroutine(FinJeux());
             //sert a arreter objet arrete tt force sur objet
-           
+            StartCoroutine(IntroDelai()); 
             transform.position = collision.transform.position;
             rigidbodyDeBalle.useGravity = false;
             audioSourceDelaBalle.PlayOneShot(sonFin);
