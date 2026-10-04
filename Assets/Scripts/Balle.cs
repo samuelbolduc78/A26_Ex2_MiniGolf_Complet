@@ -16,13 +16,13 @@ public class Balle : MonoBehaviour
     Rigidbody rigidbodyDeBalle;
     AudioSource audioSourceDelaBalle;
     // [Header("Paramètres de tir")]
-    [SerializeField] float tirIntensite = 13f;
+    [SerializeField] float tirIntensite = 14f;
     [SerializeField] int nbCoup;
     [SerializeField] InputAction angleAction;
 
     [SerializeField] float angleVitesse;
 
-    [SerializeField] float accumulateurForce = 8f;
+    [SerializeField] float accumulateurForce = 9f;
     [SerializeField] TMP_Text txtcoup;
     [SerializeField] TMP_Text txtFin;
     [SerializeField] private CinemachineCamera FreeLookCamera;
@@ -102,7 +102,7 @@ MettreAJourUI();
             if (tirAction.WasReleasedThisFrame())
             {
                 rigidbodyDeBalle.AddForce(direction * tirIntensite * Time.deltaTime, ForceMode.Impulse);
-                tirIntensite = 10;
+                tirIntensite = 0;
                 jaugeForce.value = tirIntensite;
                 positionBalle = transform.position;
                 nbCoup++;
